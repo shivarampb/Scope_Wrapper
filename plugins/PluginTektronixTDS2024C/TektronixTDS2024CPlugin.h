@@ -7,7 +7,9 @@
 
 class CTektronixTDS2024CPlugin : public QObject, public CTektronixScopeBase {
     Q_OBJECT
+#ifndef SCOPE_NO_PLUGIN_METADATA
     Q_PLUGIN_METADATA(IID ScopePlugin_iid)
+#endif
     Q_INTERFACES(CIScopePlugin)
 public:
     CTektronixTDS2024CPlugin();

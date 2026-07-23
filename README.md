@@ -91,6 +91,24 @@ make
 At runtime, `CScopeManager::instance().loadPlugins("bin/plugins")` discovers and
 registers every built plugin.
 
+## Testing (no hardware required)
+
+`tests/` contains a Qt Test suite that drives the real plugin code through an
+in-process **SCPI oscilloscope simulator** (`tests/visastub/`, a VISA test
+double). It validates command formatting, parameter validation, error strings,
+VISA resource strings, version compatibility, and — per vendor dialect
+(Keysight/Tektronix/R&S/LeCroy) — the exact SCPI commands generated and the
+decoded waveform round-trip.
+
+```sh
+sudo apt-get install -y --no-install-recommends qtbase5-dev qtbase5-dev-tools
+tests/run_tests.sh
+# => Totals: 12 passed, 0 failed
+```
+
+The simulator swaps in for real VISA only under test; production builds link the
+vendor VISA via each plugin's `.pro`.
+
 ## Supported models (all inventory scopes)
 
 | Model | Vendor | BW | Ch | Plugin | Family base |

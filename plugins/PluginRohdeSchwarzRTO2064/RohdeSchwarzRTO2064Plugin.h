@@ -7,7 +7,9 @@
 
 class CRohdeSchwarzRTO2064Plugin : public QObject, public CRohdeSchwarzScopeBase {
     Q_OBJECT
+#ifndef SCOPE_NO_PLUGIN_METADATA
     Q_PLUGIN_METADATA(IID ScopePlugin_iid)
+#endif
     Q_INTERFACES(CIScopePlugin)
 public:
     CRohdeSchwarzRTO2064Plugin();

@@ -20,6 +20,8 @@ ui_*.h
 .qmake.stash
 debug/
 release/
+build/
+*.log
 
 # IDE / OS
 *.user

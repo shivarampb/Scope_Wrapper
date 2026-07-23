@@ -499,8 +499,9 @@ ScopeError CLeCroyScopeBase::captureWaveform(U32BIT in_u32ScopeNumber, U32BIT in
     // INSPECT returns: C1:INSP "HORIZ_INTERVAL : 2e-09". Extract the number after ':'.
     auto numAfterColon = [](const QString& in) -> double {
         const int c = in.lastIndexOf(':');
-        const QString tail = (c >= 0) ? in.mid(c + 1) : in;
-        return tail.remove('"').trimmed().toDouble();
+        QString tail = (c >= 0) ? in.mid(c + 1) : in;
+        tail.remove('"');
+        return tail.trimmed().toDouble();
     };
     const double dx = numAfterColon(sInterval);
     const double x0 = numAfterColon(sOffset);
@@ -519,14 +520,17 @@ ScopeError CLeCroyScopeBase::captureWaveform(U32BIT in_u32ScopeNumber, U32BIT in
     out_sWaveform.m_sPreamble.m_u32Points   = static_cast<U32BIT>(tokens.size());
     out_sWaveform.m_dTime.reserve(tokens.size());
     out_sWaveform.m_dVolts.reserve(tokens.size());
+    int k = 0; // sample index (advances only for parseable numeric tokens)
     for (int i = 0; i < tokens.size(); ++i)
     {
         bool ok = false;
         const double val = tokens.at(i).toDouble(&ok);
-        if (!ok) continue;
+        if (!ok) continue; // skip the leading descriptor token
         out_sWaveform.m_dVolts.append(val);
-        out_sWaveform.m_dTime.append(x0 + static_cast<double>(i) * dx);
+        out_sWaveform.m_dTime.append(x0 + static_cast<double>(k) * dx);
+        ++k;
     }
+    out_sWaveform.m_sPreamble.m_u32Points = static_cast<U32BIT>(k);
     if (out_sWaveform.m_dVolts.isEmpty())
         return ScopeError(ScopeErrorCode::WAVEFORM_TRANSFER_FAILED, "No samples parsed");
     return ScopeError(ScopeErrorCode::SUCCESS);

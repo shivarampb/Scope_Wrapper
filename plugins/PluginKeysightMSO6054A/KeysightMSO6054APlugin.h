@@ -7,7 +7,9 @@
 
 class CKeysightMSO6054APlugin : public QObject, public CVisaScopePlugin {
     Q_OBJECT
+#ifndef SCOPE_NO_PLUGIN_METADATA
     Q_PLUGIN_METADATA(IID ScopePlugin_iid)
+#endif
     Q_INTERFACES(CIScopePlugin)
 public:
     CKeysightMSO6054APlugin();
