@@ -20,11 +20,17 @@ ScopeCore/                    # Shared core library (analogue of PowerSupplyCore
     ScopeError.h              # ScopeErrorCode, DeviceStatusFlag, S_DeviceErrorStatus, ScopeError
     VisaHelper.h              # S_ConnectionConfig::toVisaResourceString() (reused from reference)
     IScopePlugin.h            # CIScopePlugin interface + Q_DECLARE_INTERFACE
-    CScpiCommandBuilder.h     # command templating + parameter validation
+    CScpiCommandBuilder.h     # numeric formatting + parameter validation
+    ScopeDialect.h            # S_ScpiDialect: a vendor's SCPI command set as templates
+    CVisaScopePlugin.h        # shared VISA transport + generic interface impl
+    ScopeFamilies.h           # per-vendor dialect factories + family bases + builders
     ScopeManager.h            # CScopeManager singleton (QPluginLoader based)
   src/                        # matching .cpp implementations
-plugins/
-  PluginKeysightDSOX2012A/    # First reference plugin (100 MHz, 2 ch)
+plugins/                      # one loadable plugin per inventory model
+  PluginKeysightDSOX2012A/  PluginKeysightDSO7104B/  PluginKeysightDSOS204A/
+  PluginKeysightMSO6054A/   PluginTektronixMDO34/    PluginTektronixTDS2024C/
+  PluginTektronixTDS1012B/  PluginRohdeSchwarzRTM3004/ PluginRohdeSchwarzRTO2064/
+  PluginLeCroyWaveSurfer42XS/
 models/
   scope_models.json           # Inventory-seeded model catalog
   DSOX2012A/scpi_map.json     # Reviewed SCPI command map for the model
@@ -32,6 +38,27 @@ datasheets/
   index.json                  # Programming-manual / datasheet index
 ScopePlugins.pro              # Top-level qmake subdirs project
 ```
+
+### How a plugin is built
+
+The identical VISA transport (the code each ELoad_R2 plugin duplicated) is
+factored once into `CVisaScopePlugin`, which implements the whole
+`CIScopePlugin` interface generically, driven by an `S_ScpiDialect` command
+table (the in-code form of `scpi_map.json`). Each **model plugin** is still its
+own dynamically-loaded module (own `.pro`, `Q_PLUGIN_METADATA`, capabilities)
+but reduces to identity + capabilities + a dialect:
+
+```cpp
+CKeysightDSOX2012APlugin::CKeysightDSOX2012APlugin() {
+    m_info    = makeScopePluginInfo("Keysight DSOX2012A", ...);
+    m_caps    = makeScopeCaps(2, 100e6, 2e9, 100000, 5e-9, 50.0, 1e-3, 5.0, false);
+    m_dialect = keysightInfiniiVisionDialect();
+}
+```
+
+Vendors whose waveform/measurement transfer differs from the Keysight-style
+default override just those methods in a family base
+(`CTektronixScopeBase`, `CRohdeSchwarzScopeBase`, `CLeCroyScopeBase`).
 
 ## Mapping to ELoad_R2
 
@@ -64,8 +91,28 @@ make
 At runtime, `CScopeManager::instance().loadPlugins("bin/plugins")` discovers and
 registers every built plugin.
 
+## Supported models (all inventory scopes)
+
+| Model | Vendor | BW | Ch | Plugin | Family base |
+|-------|--------|----|----|--------|-------------|
+| DSOX2012A | Keysight/Agilent | 100 MHz | 2 | PluginKeysightDSOX2012A | InfiniiVision |
+| DSO7104B | Agilent | 1 GHz | 4 | PluginKeysightDSO7104B | InfiniiVision |
+| DSOS204A | Keysight | 2 GHz | 4 | PluginKeysightDSOS204A | Infiniium |
+| MSO6054A | Agilent | 500 MHz | 4 | PluginKeysightMSO6054A | InfiniiVision (MSO) |
+| MDO34 | Tektronix | 1 GHz | 4 | PluginTektronixMDO34 | Tektronix |
+| TDS2024C | Tektronix | 200 MHz | 4 | PluginTektronixTDS2024C | Tektronix |
+| TDS1012B | Tektronix | 100 MHz | 2 | PluginTektronixTDS1012B | Tektronix |
+| RTM3004 | Rohde & Schwarz | 1 GHz | 4 | PluginRohdeSchwarzRTM3004 | R&S |
+| RTO2064 | Rohde & Schwarz | 6 GHz | 4 | PluginRohdeSchwarzRTO2064 | R&S |
+| WaveSurfer 42XS | LeCroy | 400 MHz | 4 | PluginLeCroyWaveSurfer42XS | LeCroy |
+
 ## Status
 
-- **Phase 1 (core + first plugin): implemented in this branch.**
-- Phases 2–4 (datasheet tooling, more fleet plugins, measurement suite, tests)
-  are described in the development plan.
+- **Core library + plugins for all 10 inventory models: implemented in this branch.**
+- SCPI dialects are coded to each vendor's programming manual. The Keysight path
+  (InfiniiVision/Infiniium) is the most complete; Tektronix/R&S/LeCroy waveform
+  and measurement paths follow each manual and want hardware/simulator
+  validation (Phase 4 of the development plan).
+- Remaining plan work: `tools/datasheet_fetch` (Digi-Key/Mouser), a SCPI
+  simulator + Qt Test suite, and per-model `scpi_map.json` for the non-Keysight
+  models.

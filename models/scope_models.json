@@ -18,7 +18,7 @@
       "channels": 4,
       "bandwidthHz": 1000000000,
       "plugin": "Keysight DSO7104B",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "model": "DSOS204A",
@@ -27,7 +27,7 @@
       "channels": 4,
       "bandwidthHz": 2000000000,
       "plugin": "Keysight DSOS204A",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "model": "MSO6054A",
@@ -36,7 +36,7 @@
       "channels": 4,
       "bandwidthHz": 500000000,
       "plugin": "Keysight MSO6054A",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "model": "MDO34",
@@ -45,7 +45,7 @@
       "channels": 4,
       "bandwidthHz": 1000000000,
       "plugin": "Tektronix MDO34",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "model": "TDS2024C",
@@ -54,7 +54,7 @@
       "channels": 4,
       "bandwidthHz": 200000000,
       "plugin": "Tektronix TDS2024C",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "model": "TDS1012B",
@@ -63,7 +63,7 @@
       "channels": 2,
       "bandwidthHz": 100000000,
       "plugin": "Tektronix TDS1012B",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "model": "RTM3004",
@@ -72,7 +72,7 @@
       "channels": 4,
       "bandwidthHz": 1000000000,
       "plugin": "RohdeSchwarz RTM3004",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "model": "RTO2064",
@@ -81,7 +81,7 @@
       "channels": 4,
       "bandwidthHz": 6000000000,
       "plugin": "RohdeSchwarz RTO2064",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "model": "WaveSurfer 42XS",
@@ -90,7 +90,7 @@
       "channels": 4,
       "bandwidthHz": 400000000,
       "plugin": "LeCroy WaveSurfer42XS",
-      "status": "planned"
+      "status": "implemented"
     }
   ]
 }
