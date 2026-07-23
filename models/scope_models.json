@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0.0",
+  "description": "Scope model catalog seeded from Equipment_Inventory_List.xlsx. Maps each inventory oscilloscope to its vendor SCPI family and the plugin that drives it. Used to prioritise plugin work and to auto-select a plugin from an *IDN? model string.",
+  "models": [
+    {
+      "model": "DSOX2012A",
+      "manufacturer": "Keysight/Agilent",
+      "family": "InfiniiVision 2000 X-Series",
+      "channels": 2,
+      "bandwidthHz": 100000000,
+      "plugin": "Keysight DSOX2012A",
+      "status": "implemented"
+    },
+    {
+      "model": "DSO7104B",
+      "manufacturer": "Agilent",
+      "family": "InfiniiVision 7000",
+      "channels": 4,
+      "bandwidthHz": 1000000000,
+      "plugin": "Keysight DSO7104B",
+      "status": "planned"
+    },
+    {
+      "model": "DSOS204A",
+      "manufacturer": "Keysight",
+      "family": "Infiniium S-Series",
+      "channels": 4,
+      "bandwidthHz": 2000000000,
+      "plugin": "Keysight DSOS204A",
+      "status": "planned"
+    },
+    {
+      "model": "MSO6054A",
+      "manufacturer": "Agilent",
+      "family": "InfiniiVision 6000",
+      "channels": 4,
+      "bandwidthHz": 500000000,
+      "plugin": "Keysight MSO6054A",
+      "status": "planned"
+    },
+    {
+      "model": "MDO34",
+      "manufacturer": "Tektronix",
+      "family": "3 Series MDO",
+      "channels": 4,
+      "bandwidthHz": 1000000000,
+      "plugin": "Tektronix MDO34",
+      "status": "planned"
+    },
+    {
+      "model": "TDS2024C",
+      "manufacturer": "Tektronix",
+      "family": "TDS2000C",
+      "channels": 4,
+      "bandwidthHz": 200000000,
+      "plugin": "Tektronix TDS2024C",
+      "status": "planned"
+    },
+    {
+      "model": "TDS1012B",
+      "manufacturer": "Tektronix",
+      "family": "TDS1000B",
+      "channels": 2,
+      "bandwidthHz": 100000000,
+      "plugin": "Tektronix TDS1012B",
+      "status": "planned"
+    },
+    {
+      "model": "RTM3004",
+      "manufacturer": "Rohde & Schwarz",
+      "family": "RTM3000",
+      "channels": 4,
+      "bandwidthHz": 1000000000,
+      "plugin": "RohdeSchwarz RTM3004",
+      "status": "planned"
+    },
+    {
+      "model": "RTO2064",
+      "manufacturer": "Rohde & Schwarz",
+      "family": "RTO2000",
+      "channels": 4,
+      "bandwidthHz": 6000000000,
+      "plugin": "RohdeSchwarz RTO2064",
+      "status": "planned"
+    },
+    {
+      "model": "WaveSurfer 42XS",
+      "manufacturer": "LeCroy",
+      "family": "WaveSurfer Xs",
+      "channels": 4,
+      "bandwidthHz": 400000000,
+      "plugin": "LeCroy WaveSurfer42XS",
+      "status": "planned"
+    }
+  ]
+}
