@@ -50,6 +50,11 @@ QString ScopeError::errorCodeToString(ScopeErrorCode in_eCode)
     case ScopeErrorCode::ILLEGAL_PARAMETER:       return "Illegal parameter";
     case ScopeErrorCode::SETTING_CONFLICT:        return "Settings conflict";
     case ScopeErrorCode::SETTING_OUT_OF_RANGE:    return "Setting out of range";
+    case ScopeErrorCode::SET_MEMORY_FAILED:       return "Failed to set memory depth";
+    case ScopeErrorCode::SET_SAMPLERATE_FAILED:   return "Failed to set sample rate";
+    case ScopeErrorCode::SCREENSHOT_FAILED:       return "Screenshot transfer failed";
+    case ScopeErrorCode::SAVE_RECALL_FAILED:      return "Save/recall failed";
+    case ScopeErrorCode::NOT_SUPPORTED:           return "Feature not supported by this model";
     case ScopeErrorCode::PARAMETER_OUT_OF_RANGE:  return "Parameter out of range";
     case ScopeErrorCode::INVALID_VOLTS_PER_DIV:   return "Invalid volts/div value";
     case ScopeErrorCode::INVALID_SECONDS_PER_DIV: return "Invalid seconds/div value";

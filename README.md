@@ -124,13 +124,29 @@ vendor VISA via each plugin's `.pro`.
 | RTO2064 | Rohde & Schwarz | 6 GHz | 4 | PluginRohdeSchwarzRTO2064 | R&S |
 | WaveSurfer 42XS | LeCroy | 400 MHz | 4 | PluginLeCroyWaveSurfer42XS | LeCroy |
 
+## Capabilities
+
+Per instrument, through `CIScopePlugin` / `CScopeManager`: connect/`*IDN?`/reset/
+auto-setup; vertical (scale, offset, coupling, probe, bandwidth-limit, enable);
+horizontal (timebase, position, **memory depth**, **sample rate**); trigger
+(source, slope, level, mode); acquisition (mode, average, run/stop/single/force);
+measurements; waveform capture; **screenshot**; **setup save/recall** (`*SAV`/`*RCL`);
+**MSO digital channels** (enable + threshold, on MSO models); full status/error
+queue. `CScopeManager::createInstanceFromIdn()` **auto-selects the plugin from an
+`*IDN?` string** (normalized match, so `DSO-X 2012A` resolves `DSOX2012A`).
+
 ## Status
 
-- **Core library + plugins for all 10 inventory models: implemented in this branch.**
-- SCPI dialects are coded to each vendor's programming manual. The Keysight path
-  (InfiniiVision/Infiniium) is the most complete; Tektronix/R&S/LeCroy waveform
-  and measurement paths follow each manual and want hardware/simulator
-  validation (Phase 4 of the development plan).
-- Remaining plan work: `tools/datasheet_fetch` (Digi-Key/Mouser), a SCPI
-  simulator + Qt Test suite, and per-model `scpi_map.json` for the non-Keysight
-  models.
+- **Complete for all 10 inventory models**: core library, plugins, the full
+  feature set above, per-model `scpi_map.json` for every model, model catalog,
+  datasheet index + `datasheet_fetch` tool, and CI.
+- **22 automated tests green** — 16 unit/simulator (`tests/`) + 6 dynamic-load
+  (`tests/dl/`, real `.so` via `QPluginLoader`), all host-free via the SCPI
+  simulator. A test cross-checks generated commands against each `scpi_map.json`.
+- SCPI dialects are coded to each vendor's programming manual and
+  simulator-verified. The Keysight path is the most exercised; Tektronix/R&S/
+  LeCroy waveform/measurement paths still want a **bench check** against real
+  instruments.
+- **Externally blocked (not in this repo):** validation on real hardware, and
+  downloading actual datasheet PDFs (needs Digi-Key/Mouser API keys — the tool
+  and index are ready to run once keys exist).

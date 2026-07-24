@@ -131,6 +131,12 @@ S_ScpiDialect keysightInfiniiVisionDialect()
     d.m_mapMeasTokens[Enum_MeasurementType::DutyCycle]  = "DUTYcycle";
     d.m_mapMeasTokens[Enum_MeasurementType::PulseWidth] = "PWIDth";
     d.m_mapMeasTokens[Enum_MeasurementType::Overshoot]  = "OVERshoot";
+    // Extended features (InfiniiVision 2000/6000/7000 X-Series Programmer's Guide)
+    d.m_strMemoryDepth = ":ACQuire:POINts %1";
+    d.m_strSampleRate  = "";                        // sample rate is auto/derived
+    d.m_strScreenshot  = ":DISPlay:DATA? PNG,COLor";
+    d.m_strDigEnable   = ":DIGital%1:DISPlay %2";
+    d.m_strDigThreshold= ":POD%1:THReshold %2";
     return d;
 }
 
@@ -141,6 +147,8 @@ S_ScpiDialect keysightInfiniiumDialect()
     d.m_strAutoscale = ":AUToscale";
     // Infiniium acquisition modes: ETIMe/RTIMe differ, but SAMPle/AVERage/HRES map cleanly.
     addStdAcq(d, "NORMal", "PEAK", "AVERage", "HRESolution");
+    d.m_strSampleRate = ":ACQuire:SRATe:ANALog %1"; // Infiniium supports a direct set
+    d.m_strScreenshot = ":DISPlay:DATA? PNG";
     return d;
 }
 
@@ -174,6 +182,12 @@ S_ScpiDialect tektronixDialect()
     d.m_strSweepAuto = "AUTO"; d.m_strSweepNormal = "NORMal";
     d.m_strCouplingDC = "DC"; d.m_strCouplingAC = "AC"; d.m_strCouplingGND = "GND";
     addStdAcq(d, "SAMple", "PEAKdetect", "AVErage", "HIRes");
+    // Extended features (Tektronix 3/4 Series MDO & TDS Programmer Manuals)
+    d.m_strMemoryDepth  = "HORizontal:RECOrdlength %1";
+    d.m_strSampleRate   = "HORizontal:SAMPLERate %1";
+    d.m_strScreenshot   = "";                 // hardcopy is a file workflow
+    d.m_strDigEnable    = "SELect:D%1 %2";
+    d.m_strDigThreshold = "";
     return d;
 }
 
@@ -212,6 +226,10 @@ S_ScpiDialect rohdeSchwarzDialect()
     d.m_mapMeasTokens[Enum_MeasurementType::Vrms]      = "RMS";
     d.m_mapMeasTokens[Enum_MeasurementType::RiseTime]  = "RTIMe";
     d.m_mapMeasTokens[Enum_MeasurementType::FallTime]  = "FTIMe";
+    // Extended features (R&S RTM3000 Remote Control Commands)
+    d.m_strMemoryDepth = "ACQuire:POINts %1";
+    d.m_strSampleRate  = "ACQuire:SRATe %1";
+    d.m_strScreenshot  = "";                  // HCOPy is a file/MMEMory workflow
     return d;
 }
 
@@ -253,6 +271,10 @@ S_ScpiDialect leCroyDialect()
     d.m_mapMeasTokens[Enum_MeasurementType::RiseTime]  = "RISE";
     d.m_mapMeasTokens[Enum_MeasurementType::FallTime]  = "FALL";
     d.m_mapMeasTokens[Enum_MeasurementType::DutyCycle] = "DUTY";
+    // Extended features (Teledyne LeCroy MAUI Remote Control Manual)
+    d.m_strMemoryDepth = "MSIZ %1";
+    d.m_strSampleRate  = "";                  // derived from timebase + memory
+    d.m_strScreenshot  = "SCDP";              // screen dump returns image bytes
     return d;
 }
 

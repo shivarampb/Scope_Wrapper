@@ -276,6 +276,28 @@ ScopeError CVisaScopePlugin::setHorizontalPosition(U32BIT in_u32ScopeNumber, FDO
     return sendCommand(in_u32ScopeNumber, m_dialect.m_strTimebasePos.arg(CScpiCommandBuilder::formatValue(in_dDelaySeconds)));
 }
 
+ScopeError CVisaScopePlugin::setMemoryDepth(U32BIT in_u32ScopeNumber, U64BIT in_u64Points)
+{
+    if (m_dialect.m_strMemoryDepth.isEmpty())
+        return ScopeError(ScopeErrorCode::NOT_SUPPORTED, "Memory-depth set not supported");
+    if (in_u64Points > 0 && in_u64Points > m_caps.m_u64MaxMemoryDepth)
+        return ScopeError(ScopeErrorCode::PARAMETER_OUT_OF_RANGE,
+                          QString("%1 pts exceeds max %2").arg(in_u64Points).arg(m_caps.m_u64MaxMemoryDepth));
+    ScopeError err = sendCommand(in_u32ScopeNumber, m_dialect.m_strMemoryDepth.arg(in_u64Points));
+    return err.isSuccess() ? err : ScopeError(ScopeErrorCode::SET_MEMORY_FAILED, err.description());
+}
+
+ScopeError CVisaScopePlugin::setSampleRate(U32BIT in_u32ScopeNumber, FDOUBLE in_dSamplesPerSec)
+{
+    if (m_dialect.m_strSampleRate.isEmpty())
+        return ScopeError(ScopeErrorCode::NOT_SUPPORTED, "Sample rate is derived on this model");
+    if (in_dSamplesPerSec > m_caps.m_dMaxSampleRate)
+        return ScopeError(ScopeErrorCode::PARAMETER_OUT_OF_RANGE,
+                          QString("%1 Sa/s exceeds max %2").arg(in_dSamplesPerSec).arg(m_caps.m_dMaxSampleRate));
+    ScopeError err = sendCommand(in_u32ScopeNumber, m_dialect.m_strSampleRate.arg(CScpiCommandBuilder::formatValue(in_dSamplesPerSec)));
+    return err.isSuccess() ? err : ScopeError(ScopeErrorCode::SET_SAMPLERATE_FAILED, err.description());
+}
+
 // ============================ Trigger ============================
 
 ScopeError CVisaScopePlugin::setTrigger(U32BIT in_u32ScopeNumber, const S_TriggerConfig& in_sTrigger)
@@ -483,4 +505,48 @@ ScopeError CVisaScopePlugin::readOperationStatus(U32BIT in_u32ScopeNumber, U32BI
     ScopeError err = sendQuery(in_u32ScopeNumber, m_dialect.m_strOperEvent, resp);
     if (err.isSuccess()) out_u32Status = resp.toUInt();
     return err;
+}
+
+// ============================ Screenshot / setup memory / MSO digital ============================
+
+ScopeError CVisaScopePlugin::getScreenshot(U32BIT in_u32ScopeNumber, QByteArray& out_baImage)
+{
+    if (m_dialect.m_strScreenshot.isEmpty())
+        return ScopeError(ScopeErrorCode::NOT_SUPPORTED, "Screenshot over SCPI not supported (file workflow)");
+    ScopeError err = sendCommand(in_u32ScopeNumber, m_dialect.m_strScreenshot);
+    if (!err.isSuccess()) return ScopeError(ScopeErrorCode::SCREENSHOT_FAILED, err.description());
+    err = readBinaryBlock(in_u32ScopeNumber, out_baImage);
+    return err.isSuccess() ? err : ScopeError(ScopeErrorCode::SCREENSHOT_FAILED, err.description());
+}
+
+ScopeError CVisaScopePlugin::saveSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location)
+{
+    ScopeError err = sendCommand(in_u32ScopeNumber, m_dialect.m_strSaveSetup.arg(in_u32Location));
+    return err.isSuccess() ? err : ScopeError(ScopeErrorCode::SAVE_RECALL_FAILED, err.description());
+}
+
+ScopeError CVisaScopePlugin::recallSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location)
+{
+    ScopeError err = sendCommand(in_u32ScopeNumber, m_dialect.m_strRecallSetup.arg(in_u32Location));
+    return err.isSuccess() ? err : ScopeError(ScopeErrorCode::SAVE_RECALL_FAILED, err.description());
+}
+
+ScopeError CVisaScopePlugin::setDigitalChannelEnable(U32BIT in_u32ScopeNumber, U32BIT in_u32DigitalChannel, bool in_bEnable)
+{
+    if (!m_caps.m_bIsMSO || m_dialect.m_strDigEnable.isEmpty())
+        return ScopeError(ScopeErrorCode::NOT_SUPPORTED, "Model has no MSO digital channels");
+    if (in_u32DigitalChannel >= m_caps.m_u32DigitalChannels)
+        return ScopeError(ScopeErrorCode::INVALID_CHANNEL,
+                          QString("Digital channel %1 out of range (0..%2)")
+                              .arg(in_u32DigitalChannel).arg(m_caps.m_u32DigitalChannels - 1));
+    return sendCommand(in_u32ScopeNumber, m_dialect.m_strDigEnable
+                           .arg(in_u32DigitalChannel).arg(in_bEnable ? m_dialect.m_strOn : m_dialect.m_strOff));
+}
+
+ScopeError CVisaScopePlugin::setDigitalThreshold(U32BIT in_u32ScopeNumber, U32BIT in_u32Group, FDOUBLE in_dThresholdVolts)
+{
+    if (!m_caps.m_bIsMSO || m_dialect.m_strDigThreshold.isEmpty())
+        return ScopeError(ScopeErrorCode::NOT_SUPPORTED, "Model has no MSO digital threshold control");
+    return sendCommand(in_u32ScopeNumber, m_dialect.m_strDigThreshold
+                           .arg(in_u32Group).arg(CScpiCommandBuilder::formatValue(in_dThresholdVolts)));
 }

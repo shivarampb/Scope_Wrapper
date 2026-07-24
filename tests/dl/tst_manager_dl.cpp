@@ -76,6 +76,22 @@ private slots:
         // Operating on an instance that was never created.
         QCOMPARE(mgr.reset(99).code(), ScopeErrorCode::INVALID_SCOPE_NUMBER);
     }
+
+    void autoSelectFromIdn()
+    {
+        CScopeManager mgr;
+        mgr.loadPlugins(pluginDir());
+
+        // Realistic Keysight IDN uses "DSO-X 2012A"; the plugin model is
+        // "DSOX2012A". Normalized matching must still resolve it.
+        const QString idn = "KEYSIGHT TECHNOLOGIES,DSO-X 2012A,MY51330623,07.30";
+        QCOMPARE(mgr.matchPluginForModel(idn), QString("Keysight DSOX2012A"));
+        QCOMPARE(mgr.createInstanceFromIdn(1, idn).code(), ScopeErrorCode::SUCCESS);
+        QCOMPARE(mgr.getInstancePlugin(1), QString("Keysight DSOX2012A"));
+
+        QVERIFY(mgr.matchPluginForModel("VENDOR,UNKNOWN-9999,x,y").isEmpty());
+        QCOMPARE(mgr.createInstanceFromIdn(2, "no match here").code(), ScopeErrorCode::PLUGIN_NOT_FOUND);
+    }
 };
 
 QTEST_MAIN(TstManagerDl)

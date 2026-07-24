@@ -71,11 +71,22 @@ std::string lecroySimple()
     return "C1:INSP \"" + vals + "\"\n";
 }
 
+std::string screenshotBlock()   // tiny fake image payload as a definite block
+{
+    std::string png(16, '\0');
+    png[0] = char(0x89); png[1] = 'P'; png[2] = 'N'; png[3] = 'G';
+    return ieeeBlock(png) + "\n";
+}
+
 // Compute a response for a query command.
 std::string responseFor(const std::string& cmd)
 {
     if (contains(cmd, "*IDN?"))   return "KEYSIGHT TECHNOLOGIES,DSO-X 2012A,MY51330623,07.30\n";
     if (contains(cmd, "*OPC?"))   return "1\n";
+
+    // Screenshot (Keysight :DISPlay:DATA?, LeCroy SCDP)
+    if (contains(cmd, "DISPlay:DATA?")) return screenshotBlock();
+    if (cmd.rfind("SCDP", 0) == 0)      return screenshotBlock();
     if (contains(cmd, "*ESR?"))   return "0\n";
     if (contains(cmd, "*STB?"))   return "0\n";
 
@@ -159,7 +170,9 @@ ViStatus viWrite(ViSession, ViBuf buf, ViUInt32 count, ViUInt32* retCount)
     if (retCount) *retCount = count;
     const std::string logged = trimTerminator(cmd);
     if (!logged.empty()) g_commands.push_back(logged);
-    if (contains(cmd, "?")) g_responses.push_back(responseFor(logged));
+    // Queries carry '?'; LeCroy SCDP is a query-like command without one.
+    if (contains(cmd, "?") || logged.rfind("SCDP", 0) == 0)
+        g_responses.push_back(responseFor(logged));
     return VI_SUCCESS;
 }
 

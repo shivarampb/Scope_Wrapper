@@ -13,6 +13,7 @@
 #define ISCOPEPLUGIN_H
 
 #include <QtPlugin>
+#include <QByteArray>
 #include "ScopeError.h"
 #include "ScopeTypes.h"
 
@@ -45,6 +46,8 @@ public:
     // ---- Horizontal / timebase ----
     virtual ScopeError setTimebaseScale(U32BIT in_u32ScopeNumber, FDOUBLE in_dSecondsPerDiv) = 0;
     virtual ScopeError setHorizontalPosition(U32BIT in_u32ScopeNumber, FDOUBLE in_dDelaySeconds) = 0;
+    virtual ScopeError setMemoryDepth(U32BIT in_u32ScopeNumber, U64BIT in_u64Points) = 0;
+    virtual ScopeError setSampleRate(U32BIT in_u32ScopeNumber, FDOUBLE in_dSamplesPerSec) = 0;
 
     // ---- Trigger ----
     virtual ScopeError setTrigger(U32BIT in_u32ScopeNumber, const S_TriggerConfig& in_sTrigger) = 0;
@@ -65,6 +68,13 @@ public:
     // ---- Waveform transfer ----
     virtual ScopeError captureWaveform(U32BIT in_u32ScopeNumber, U32BIT in_u32Channel,
                                        S_Waveform& out_sWaveform) = 0;
+
+    // ---- Screenshot / setup memory / MSO digital ----
+    virtual ScopeError getScreenshot(U32BIT in_u32ScopeNumber, QByteArray& out_baImage) = 0;
+    virtual ScopeError saveSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location) = 0;
+    virtual ScopeError recallSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location) = 0;
+    virtual ScopeError setDigitalChannelEnable(U32BIT in_u32ScopeNumber, U32BIT in_u32DigitalChannel, bool in_bEnable) = 0;
+    virtual ScopeError setDigitalThreshold(U32BIT in_u32ScopeNumber, U32BIT in_u32Group, FDOUBLE in_dThresholdVolts) = 0;
 
     // ---- Status / error ----
     virtual ScopeError readErrorStatus(U32BIT in_u32ScopeNumber, S_DeviceErrorStatus& out_sStatus) = 0;

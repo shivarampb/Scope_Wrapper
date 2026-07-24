@@ -51,6 +51,8 @@ public:
     // ---- Horizontal ----
     ScopeError setTimebaseScale(U32BIT in_u32ScopeNumber, FDOUBLE in_dSecondsPerDiv) override;
     ScopeError setHorizontalPosition(U32BIT in_u32ScopeNumber, FDOUBLE in_dDelaySeconds) override;
+    ScopeError setMemoryDepth(U32BIT in_u32ScopeNumber, U64BIT in_u64Points) override;
+    ScopeError setSampleRate(U32BIT in_u32ScopeNumber, FDOUBLE in_dSamplesPerSec) override;
 
     // ---- Trigger ----
     ScopeError setTrigger(U32BIT in_u32ScopeNumber, const S_TriggerConfig& in_sTrigger) override;
@@ -70,6 +72,13 @@ public:
 
     // ---- Waveform (Keysight-style default; overridable per family) ----
     ScopeError captureWaveform(U32BIT in_u32ScopeNumber, U32BIT in_u32Channel, S_Waveform& out_sWaveform) override;
+
+    // ---- Screenshot / setup memory / MSO digital ----
+    ScopeError getScreenshot(U32BIT in_u32ScopeNumber, QByteArray& out_baImage) override;
+    ScopeError saveSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location) override;
+    ScopeError recallSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location) override;
+    ScopeError setDigitalChannelEnable(U32BIT in_u32ScopeNumber, U32BIT in_u32DigitalChannel, bool in_bEnable) override;
+    ScopeError setDigitalThreshold(U32BIT in_u32ScopeNumber, U32BIT in_u32Group, FDOUBLE in_dThresholdVolts) override;
 
     // ---- Status / error ----
     ScopeError readErrorStatus(U32BIT in_u32ScopeNumber, S_DeviceErrorStatus& out_sStatus) override;

@@ -8,6 +8,10 @@
 
 #include <QtTest/QtTest>
 #include <QString>
+#include <QByteArray>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include "CScpiCommandBuilder.h"
 #include "ScopeError.h"
@@ -17,11 +21,21 @@
 #include "ScopeFamilies.h"
 
 #include "KeysightDSOX2012APlugin.h"
+#include "KeysightMSO6054APlugin.h"
 #include "TektronixMDO34Plugin.h"
 #include "RohdeSchwarzRTM3004Plugin.h"
 #include "LeCroyWaveSurfer42XSPlugin.h"
 
 #include "visastub_api.h"
+
+// Read commands[<key>].template from a models/<model>/scpi_map.json file.
+static QString mapTemplate(const QString& model, const QString& key)
+{
+    QFile f(QStringLiteral(SCOPE_MODELS_DIR) + "/" + model + "/scpi_map.json");
+    if (!f.open(QIODevice::ReadOnly)) return QString();
+    const QJsonObject root = QJsonDocument::fromJson(f.readAll()).object();
+    return root.value("commands").toObject().value(key).toObject().value("template").toString();
+}
 
 static S_ConnectionConfig lanConfig()
 {
@@ -184,6 +198,93 @@ private slots:
         QCOMPARE(wf.m_dVolts.size(), 10);
         QVERIFY(qAbs(wf.m_dVolts.at(5) - 0.5) < 1e-6);
     }
+
+    // ---- Extended features: memory/sample/save-recall/screenshot ----
+
+    void extendedFeatures()
+    {
+        CKeysightDSOX2012APlugin scope;
+        CIScopePlugin& s = scope;
+        QVERIFY(s.connect(1, lanConfig()).isSuccess());
+
+        QVERIFY(s.setMemoryDepth(1, 100000).isSuccess());
+        QVERIFY(visastub::sawCommand(":ACQuire:POINts 100000"));
+        // Beyond model max memory (100k) -> out of range.
+        QCOMPARE(s.setMemoryDepth(1, 10000000).code(), ScopeErrorCode::PARAMETER_OUT_OF_RANGE);
+        // Sample rate is derived on InfiniiVision -> not supported.
+        QCOMPARE(s.setSampleRate(1, 1e9).code(), ScopeErrorCode::NOT_SUPPORTED);
+
+        QVERIFY(s.saveSetup(1, 3).isSuccess());
+        QVERIFY(visastub::sawCommand("*SAV 3"));
+        QVERIFY(s.recallSetup(1, 3).isSuccess());
+        QVERIFY(visastub::sawCommand("*RCL 3"));
+
+        QByteArray img;
+        QVERIFY(s.getScreenshot(1, img).isSuccess());
+        QVERIFY(visastub::sawCommand(":DISPlay:DATA? PNG,COLor"));
+        QVERIFY(!img.isEmpty());
+        QCOMPARE(img.mid(1, 3), QByteArray("PNG"));
+    }
+
+    void msoDigitalChannels()
+    {
+        CKeysightMSO6054APlugin mso;
+        CIScopePlugin& s = mso;
+        QVERIFY(s.getCapabilities().m_bIsMSO);
+        QVERIFY(s.connect(1, lanConfig()).isSuccess());
+
+        QVERIFY(s.setDigitalChannelEnable(1, 0, true).isSuccess());
+        QVERIFY(visastub::sawCommand(":DIGital0:DISPlay ON"));
+        QVERIFY(s.setDigitalThreshold(1, 1, 1.4).isSuccess());
+        QVERIFY(visastub::sawCommand(":POD1:THReshold 1.4"));
+        // Out-of-range digital channel (model has 16: 0..15).
+        QCOMPARE(s.setDigitalChannelEnable(1, 99, true).code(), ScopeErrorCode::INVALID_CHANNEL);
+    }
+
+    void nonMsoRejectsDigital()
+    {
+        CKeysightDSOX2012APlugin scope; // not an MSO
+        CIScopePlugin& s = scope;
+        QVERIFY(s.connect(1, lanConfig()).isSuccess());
+        QCOMPARE(s.setDigitalChannelEnable(1, 0, true).code(), ScopeErrorCode::NOT_SUPPORTED);
+    }
+
+    // ---- SCPI map <-> code cross-check ----
+
+    void scpiMapMatchesCode()
+    {
+        // Keysight: map "%1"=channel number -> ":CHANnel1:SCALe 0.5"
+        {
+            QString t = mapTemplate("DSOX2012A", "verticalScale");
+            QVERIFY2(!t.isEmpty(), "missing DSOX2012A verticalScale template");
+            const QString expected = t.arg(1).arg("0.5");
+            CKeysightDSOX2012APlugin scope; CIScopePlugin& s = scope;
+            QVERIFY(s.connect(1, lanConfig()).isSuccess());
+            QVERIFY(s.setVerticalScale(1, 1, 0.5).isSuccess());
+            QVERIFY2(visastub::sawCommand(expected.toStdString()), qPrintable("expected: " + expected));
+        }
+        // Tektronix: map "%1"=source (CH1) -> "CH1:SCAle 0.5"
+        {
+            QString t = mapTemplate("MDO34", "verticalScale");
+            QVERIFY2(!t.isEmpty(), "missing MDO34 verticalScale template");
+            const QString expected = t.arg("CH1").arg("0.5");
+            CTektronixMDO34Plugin scope; CIScopePlugin& s = scope;
+            QVERIFY(s.connect(1, lanConfig()).isSuccess());
+            QVERIFY(s.setVerticalScale(1, 1, 0.5).isSuccess());
+            QVERIFY2(visastub::sawCommand(expected.toStdString()), qPrintable("expected: " + expected));
+        }
+        // LeCroy: map "%1"=source (C1) -> "C1:VDIV 0.5"
+        {
+            QString t = mapTemplate("WaveSurfer42XS", "verticalScale");
+            QVERIFY2(!t.isEmpty(), "missing WaveSurfer42XS verticalScale template");
+            const QString expected = t.arg("C1").arg("0.5");
+            CLeCroyWaveSurfer42XSPlugin scope; CIScopePlugin& s = scope;
+            QVERIFY(s.connect(1, lanConfig()).isSuccess());
+            QVERIFY(s.setVerticalScale(1, 1, 0.5).isSuccess());
+            QVERIFY2(visastub::sawCommand(expected.toStdString()), qPrintable("expected: " + expected));
+        }
+    }
+
 };
 
 QTEST_MAIN(TstScope)

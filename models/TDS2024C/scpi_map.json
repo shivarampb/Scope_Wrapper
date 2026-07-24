@@ -1,0 +1,242 @@
+{
+  "schemaVersion": "1.0.0",
+  "model": "TDS2024C",
+  "manufacturer": "Tektronix",
+  "sourceManual": "Tektronix TDS2000C Series Programmer Manual",
+  "note": "Reviewed command map. Templates match ScopeCore/src/ScopeFamilies.cpp tektronixDialect(). %1 = channel source (CH<n>).",
+  "commands": {
+    "identify": {
+      "template": "*IDN?",
+      "query": true,
+      "subsystem": "IEEE 488.2"
+    },
+    "reset": {
+      "template": "*RST",
+      "query": false,
+      "subsystem": "IEEE 488.2"
+    },
+    "clearStatus": {
+      "template": "*CLS",
+      "query": false,
+      "subsystem": "IEEE 488.2"
+    },
+    "operationComplete": {
+      "template": "*OPC?",
+      "query": true,
+      "subsystem": "IEEE 488.2"
+    },
+    "autoset": {
+      "template": "AUTOSet EXECute",
+      "query": false,
+      "subsystem": "AUTOSet"
+    },
+    "channelEnable": {
+      "template": "SELect:%1 %2",
+      "query": false,
+      "params": {
+        "%2": "ON|OFF"
+      },
+      "subsystem": "SELect"
+    },
+    "verticalScale": {
+      "template": "%1:SCAle %2",
+      "query": false,
+      "params": {
+        "%2": "volts/div"
+      },
+      "subsystem": "CH<n>"
+    },
+    "verticalOffset": {
+      "template": "%1:OFFSet %2",
+      "query": false,
+      "params": {
+        "%2": "volts"
+      },
+      "subsystem": "CH<n>"
+    },
+    "coupling": {
+      "template": "%1:COUPling %2",
+      "query": false,
+      "params": {
+        "%2": "AC|DC|GND"
+      },
+      "subsystem": "CH<n>"
+    },
+    "probeAttenuation": {
+      "template": "%1:PRObe %2",
+      "query": false,
+      "subsystem": "CH<n>"
+    },
+    "bandwidthLimit": {
+      "template": "%1:BANdwidth %2",
+      "query": false,
+      "params": {
+        "%2": "TWEnty|FULl"
+      },
+      "subsystem": "CH<n>"
+    },
+    "timebaseScale": {
+      "template": "HORizontal:SCAle %1",
+      "query": false,
+      "params": {
+        "%1": "s/div"
+      },
+      "subsystem": "HORizontal"
+    },
+    "timebasePosition": {
+      "template": "HORizontal:DELay:TIMe %1",
+      "query": false,
+      "params": {
+        "%1": "seconds"
+      },
+      "subsystem": "HORizontal"
+    },
+    "triggerSource": {
+      "template": "TRIGger:A:EDGE:SOURce %1",
+      "query": false,
+      "subsystem": "TRIGger:A:EDGE"
+    },
+    "triggerSlope": {
+      "template": "TRIGger:A:EDGE:SLOpe %1",
+      "query": false,
+      "params": {
+        "%1": "RISe|FALL|EITher"
+      },
+      "subsystem": "TRIGger:A:EDGE"
+    },
+    "triggerLevel": {
+      "template": "TRIGger:A:LEVel %1",
+      "query": false,
+      "params": {
+        "%1": "volts"
+      },
+      "subsystem": "TRIGger:A"
+    },
+    "triggerMode": {
+      "template": "TRIGger:A:MODe %1",
+      "query": false,
+      "params": {
+        "%1": "AUTO|NORMal"
+      },
+      "subsystem": "TRIGger:A"
+    },
+    "acquireMode": {
+      "template": "ACQuire:MODe %1",
+      "query": false,
+      "params": {
+        "%1": "SAMple|PEAKdetect|AVErage|HIRes"
+      },
+      "subsystem": "ACQuire"
+    },
+    "acquireCount": {
+      "template": "ACQuire:NUMAVg %1",
+      "query": false,
+      "subsystem": "ACQuire"
+    },
+    "run": {
+      "template": "ACQuire:STATE RUN",
+      "query": false,
+      "subsystem": "ACQuire"
+    },
+    "stop": {
+      "template": "ACQuire:STATE STOP",
+      "query": false,
+      "subsystem": "ACQuire"
+    },
+    "single": {
+      "template": "ACQuire:STOPAfter SEQuence;:ACQuire:STATE ON",
+      "query": false,
+      "subsystem": "ACQuire"
+    },
+    "forceTrigger": {
+      "template": "TRIGger FORCe",
+      "query": false,
+      "subsystem": "TRIGger"
+    },
+    "measureSource": {
+      "template": "MEASUrement:IMMed:SOUrce %1",
+      "query": false,
+      "subsystem": "MEASUrement:IMMed"
+    },
+    "measureType": {
+      "template": "MEASUrement:IMMed:TYPe %1",
+      "query": false,
+      "params": {
+        "%1": "PK2Pk|AMPlitude|RMS|MAXimum|MINImum|MEAN|FREQuency|PERIod|RISe|FALL|PDUty|PWIdth"
+      },
+      "subsystem": "MEASUrement:IMMed"
+    },
+    "measureValue": {
+      "template": "MEASUrement:IMMed:VALue?",
+      "query": true,
+      "subsystem": "MEASUrement:IMMed"
+    },
+    "waveformSource": {
+      "template": "DATa:SOUrce %1",
+      "query": false,
+      "subsystem": "DATa"
+    },
+    "waveformEncoding": {
+      "template": "DATa:ENCdg RIBinary",
+      "query": false,
+      "subsystem": "DATa"
+    },
+    "waveformWidth": {
+      "template": "DATa:WIDth 2",
+      "query": false,
+      "subsystem": "DATa"
+    },
+    "waveformXIncr": {
+      "template": "WFMOutpre:XINcr?",
+      "query": true,
+      "subsystem": "WFMOutpre"
+    },
+    "waveformXZero": {
+      "template": "WFMOutpre:XZEro?",
+      "query": true,
+      "subsystem": "WFMOutpre"
+    },
+    "waveformYMult": {
+      "template": "WFMOutpre:YMUlt?",
+      "query": true,
+      "subsystem": "WFMOutpre"
+    },
+    "waveformYOffset": {
+      "template": "WFMOutpre:YOFf?",
+      "query": true,
+      "subsystem": "WFMOutpre"
+    },
+    "waveformYZero": {
+      "template": "WFMOutpre:YZEro?",
+      "query": true,
+      "subsystem": "WFMOutpre"
+    },
+    "waveformPoints": {
+      "template": "WFMOutpre:NR_Pt?",
+      "query": true,
+      "subsystem": "WFMOutpre"
+    },
+    "waveformData": {
+      "template": "CURVe?",
+      "query": true,
+      "returns": "IEEE 488.2 signed 16-bit big-endian block",
+      "subsystem": "CURVe"
+    },
+    "errorQueue": {
+      "template": "EVMsg?",
+      "query": true,
+      "returns": "<code>,\"<message>\"",
+      "subsystem": "Status"
+    },
+    "standardEventStatus": {
+      "template": "*ESR?",
+      "query": true,
+      "subsystem": "IEEE 488.2"
+    },
+    "statusByte": {
+      "template": "*STB?",
+      "query": true,
+      "subsystem": "IEEE 488.2"
+    }
+  }
+}

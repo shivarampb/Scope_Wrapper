@@ -163,6 +163,46 @@ QString CScopeManager::getInstancePlugin(U32BIT in_u32ScopeNumber) const
     return m_instances.value(in_u32ScopeNumber, "");
 }
 
+namespace {
+// Normalize an identifier for fuzzy matching: keep alphanumerics, uppercase.
+// So "DSO-X 2012A" and "DSOX2012A" both become "DSOX2012A".
+QString normalizeId(const QString& in)
+{
+    QString out;
+    out.reserve(in.size());
+    for (const QChar c : in)
+        if (c.isLetterOrNumber()) out.append(c.toUpper());
+    return out;
+}
+} // namespace
+
+QString CScopeManager::matchPluginForModel(const QString& in_kIdnOrModel) const
+{
+    // Return the loaded plugin whose (normalized) model name appears in the
+    // (normalized) IDN/model string.
+    const QString hay = normalizeId(in_kIdnOrModel);
+    for (auto it = m_plugins.constBegin(); it != m_plugins.constEnd(); ++it)
+    {
+        const QString model = normalizeId(QString::fromLocal8Bit(it.value().m_sPluginInfo.m_szModelName));
+        if (!model.isEmpty() && hay.contains(model))
+        {
+            return it.key();
+        }
+    }
+    return QString();
+}
+
+ScopeError CScopeManager::createInstanceFromIdn(U32BIT in_u32ScopeNumber, const QString& in_kIdn)
+{
+    const QString plugin = matchPluginForModel(in_kIdn);
+    if (plugin.isEmpty())
+    {
+        return ScopeError(ScopeErrorCode::PLUGIN_NOT_FOUND,
+                          QString("No plugin matches IDN '%1'").arg(in_kIdn));
+    }
+    return createInstance(in_u32ScopeNumber, plugin);
+}
+
 CIScopePlugin* CScopeManager::getPlugin(U32BIT in_u32ScopeNumber)
 {
     if (!m_instances.contains(in_u32ScopeNumber))
@@ -279,6 +319,30 @@ ScopeError CScopeManager::captureWaveform(U32BIT in_u32ScopeNumber, U32BIT in_u3
 {
     SCOPE_RESOLVE_OR_FAIL(plugin, in_u32ScopeNumber);
     return plugin->captureWaveform(in_u32ScopeNumber, in_u32Channel, out_sWaveform);
+}
+
+ScopeError CScopeManager::setMemoryDepth(U32BIT in_u32ScopeNumber, U64BIT in_u64Points)
+{
+    SCOPE_RESOLVE_OR_FAIL(plugin, in_u32ScopeNumber);
+    return plugin->setMemoryDepth(in_u32ScopeNumber, in_u64Points);
+}
+
+ScopeError CScopeManager::getScreenshot(U32BIT in_u32ScopeNumber, QByteArray& out_baImage)
+{
+    SCOPE_RESOLVE_OR_FAIL(plugin, in_u32ScopeNumber);
+    return plugin->getScreenshot(in_u32ScopeNumber, out_baImage);
+}
+
+ScopeError CScopeManager::saveSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location)
+{
+    SCOPE_RESOLVE_OR_FAIL(plugin, in_u32ScopeNumber);
+    return plugin->saveSetup(in_u32ScopeNumber, in_u32Location);
+}
+
+ScopeError CScopeManager::recallSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location)
+{
+    SCOPE_RESOLVE_OR_FAIL(plugin, in_u32ScopeNumber);
+    return plugin->recallSetup(in_u32ScopeNumber, in_u32Location);
 }
 
 ScopeError CScopeManager::readErrorStatus(U32BIT in_u32ScopeNumber, S_DeviceErrorStatus& out_sStatus)

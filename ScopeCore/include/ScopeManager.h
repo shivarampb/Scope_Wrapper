@@ -42,6 +42,11 @@ public:
     bool       instanceExists(U32BIT in_u32ScopeNumber) const;
     QString    getInstancePlugin(U32BIT in_u32ScopeNumber) const;
 
+    // Auto-selection: match a loaded plugin to an *IDN? / model string, and
+    // create an instance for it in one step.
+    QString    matchPluginForModel(const QString& in_kIdnOrModel) const;
+    ScopeError createInstanceFromIdn(U32BIT in_u32ScopeNumber, const QString& in_kIdn);
+
     // ---- Delegating operations (subset; extend 1:1 with the interface) ----
     ScopeError connect(U32BIT in_u32ScopeNumber, const S_ConnectionConfig& in_sConfig);
     ScopeError disconnect(U32BIT in_u32ScopeNumber);
@@ -58,6 +63,10 @@ public:
     ScopeError measure(U32BIT in_u32ScopeNumber, U32BIT in_u32Channel,
                        Enum_MeasurementType in_enumType, FDOUBLE& out_dValue);
     ScopeError captureWaveform(U32BIT in_u32ScopeNumber, U32BIT in_u32Channel, S_Waveform& out_sWaveform);
+    ScopeError setMemoryDepth(U32BIT in_u32ScopeNumber, U64BIT in_u64Points);
+    ScopeError getScreenshot(U32BIT in_u32ScopeNumber, QByteArray& out_baImage);
+    ScopeError saveSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location);
+    ScopeError recallSetup(U32BIT in_u32ScopeNumber, U32BIT in_u32Location);
 
     ScopeError readErrorStatus(U32BIT in_u32ScopeNumber, S_DeviceErrorStatus& out_sStatus);
     ScopeError queryErrorQueue(U32BIT in_u32ScopeNumber, QString& out_qstrErrorMessage);

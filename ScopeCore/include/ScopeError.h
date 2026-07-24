@@ -44,6 +44,11 @@ enum class ScopeErrorCode {
     ILLEGAL_PARAMETER       = 2011,
     SETTING_CONFLICT        = 2012,
     SETTING_OUT_OF_RANGE    = 2013,
+    SET_MEMORY_FAILED       = 2014,
+    SET_SAMPLERATE_FAILED   = 2015,
+    SCREENSHOT_FAILED       = 2016,
+    SAVE_RECALL_FAILED      = 2017,
+    NOT_SUPPORTED           = 2099, // feature not supported by this model
 
     // --- Parameter validation (3000s) ---
     PARAMETER_OUT_OF_RANGE  = 3000,

@@ -57,6 +57,8 @@ struct S_ScpiDialect {
     // Acquisition
     QString m_strAcqType;        // ":ACQuire:TYPE %1" / "ACQuire:MODe %1"
     QString m_strAcqCount;       // ":ACQuire:COUNt %1" / "ACQuire:NUMAVg %1"
+    QString m_strMemoryDepth;    // record length, %1 = points (empty => unsupported)
+    QString m_strSampleRate;     // %1 = Sa/s (empty => derived/unsupported)
     QString m_strRun;            // ":RUN" / "ACQuire:STATE RUN"
     QString m_strStop;           // ":STOP" / "ACQuire:STATE STOP"
     QString m_strSingle;         // ":SINGle" / "ACQuire:STOPAfter SEQuence;:ACQuire:STATE ON"
@@ -65,6 +67,17 @@ struct S_ScpiDialect {
     // Measurement (%1 = type token, %2 = source). Vendors that don't fit this
     // shape override measure() in a family base instead.
     QString m_strMeasure;        // ":MEASure:%1? %2"
+
+    // Setup memory (IEEE-488.2 defaults; %1 = location)
+    QString m_strSaveSetup;      // "*SAV %1"
+    QString m_strRecallSetup;    // "*RCL %1"
+
+    // Screenshot / hardcopy one-shot query (empty => unsupported, file workflow)
+    QString m_strScreenshot;     // e.g. ":DISPlay:DATA? PNG,COLor" / "SCDP"
+
+    // MSO digital lanes (%1 = digital channel/pod, %2 = value)
+    QString m_strDigEnable;      // ":DIGital%1:DISPlay %2" / "SELect:D%1 %2"
+    QString m_strDigThreshold;   // ":POD%1:THReshold %2"
 
     // Token maps
     QString m_strOn, m_strOff;
@@ -78,7 +91,11 @@ struct S_ScpiDialect {
     // Terminator appended to every write ("\n" for most).
     QString m_strTerminator;
 
-    S_ScpiDialect() : m_strTerminator("\n") {}
+    S_ScpiDialect()
+        : m_strSaveSetup("*SAV %1")     // standard IEEE-488.2 defaults;
+        , m_strRecallSetup("*RCL %1")   // a factory may override if needed.
+        , m_strTerminator("\n")
+    {}
 
     QString source(U32BIT in_u32Channel) const
     {
