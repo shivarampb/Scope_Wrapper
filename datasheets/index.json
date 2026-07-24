@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "description": "Datasheet / programming-manual index. Vendor programming guides are the authoritative SCPI source (primary); Digi-Key/Mouser APIs are a fallback for datasheet retrieval. Populated by tools/datasheet_fetch or manually; PDFs live under datasheets/<vendor>/<model>/.",
+  "documents": [
+    {
+      "model": "DSOX2012A",
+      "manufacturer": "Keysight/Agilent",
+      "docType": "programmers_guide",
+      "title": "InfiniiVision 2000 X-Series Oscilloscopes Programmer's Guide",
+      "path": "datasheets/Keysight/DSOX2012A/",
+      "sourceUrl": "",
+      "version": "",
+      "sha256": "",
+      "retrieved": ""
+    }
+  ]
+}

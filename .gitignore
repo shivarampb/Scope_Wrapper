@@ -1,0 +1,29 @@
+# Build output
+/lib/
+/bin/
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+
+# qmake / moc generated
+Makefile
+Makefile.*
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.moc
+.qmake.stash
+debug/
+release/
+build/
+*.log
+
+# IDE / OS
+*.user
+.vscode/
+.DS_Store

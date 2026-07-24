@@ -1,0 +1,252 @@
+{
+  "schemaVersion": "1.0.0",
+  "model": "MSO6054A",
+  "manufacturer": "Agilent",
+  "sourceManual": "Keysight/Agilent InfiniiVision 6000 Series Programmer's Guide",
+  "note": "Reviewed command map. Templates match ScopeCore/src/ScopeFamilies.cpp keysightInfiniiVisionDialect(); MSO adds :DIGital<n>:DISPlay / :POD<n>:THReshold for digital lanes. %1 = channel number.",
+  "commands": {
+    "identify": {
+      "template": "*IDN?",
+      "query": true,
+      "subsystem": "Common Commands"
+    },
+    "reset": {
+      "template": "*RST",
+      "query": false,
+      "subsystem": "Common Commands"
+    },
+    "clearStatus": {
+      "template": "*CLS",
+      "query": false,
+      "subsystem": "Common Commands"
+    },
+    "operationComplete": {
+      "template": "*OPC?",
+      "query": true,
+      "subsystem": "Common Commands"
+    },
+    "autoscale": {
+      "template": ":AUToscale",
+      "query": false,
+      "subsystem": "Root"
+    },
+    "channelEnable": {
+      "template": ":CHANnel%1:DISPlay %2",
+      "query": false,
+      "params": {
+        "%1": "channel",
+        "%2": "ON|OFF"
+      },
+      "subsystem": ":CHANnel<n>"
+    },
+    "verticalScale": {
+      "template": ":CHANnel%1:SCALe %2",
+      "query": false,
+      "params": {
+        "%2": "volts/div"
+      },
+      "range": {
+        "min": 0.001,
+        "max": 5.0
+      },
+      "subsystem": ":CHANnel<n>"
+    },
+    "verticalOffset": {
+      "template": ":CHANnel%1:OFFSet %2",
+      "query": false,
+      "params": {
+        "%2": "volts"
+      },
+      "subsystem": ":CHANnel<n>"
+    },
+    "coupling": {
+      "template": ":CHANnel%1:COUPling %2",
+      "query": false,
+      "params": {
+        "%2": "AC|DC"
+      },
+      "subsystem": ":CHANnel<n>"
+    },
+    "probeAttenuation": {
+      "template": ":CHANnel%1:PROBe %2",
+      "query": false,
+      "params": {
+        "%2": "ratio"
+      },
+      "subsystem": ":CHANnel<n>"
+    },
+    "bandwidthLimit": {
+      "template": ":CHANnel%1:BWLimit %2",
+      "query": false,
+      "params": {
+        "%2": "ON|OFF"
+      },
+      "subsystem": ":CHANnel<n>"
+    },
+    "timebaseScale": {
+      "template": ":TIMebase:SCALe %1",
+      "query": false,
+      "params": {
+        "%1": "s/div"
+      },
+      "range": {
+        "min": 5e-09,
+        "max": 50.0
+      },
+      "subsystem": ":TIMebase"
+    },
+    "timebasePosition": {
+      "template": ":TIMebase:POSition %1",
+      "query": false,
+      "params": {
+        "%1": "seconds"
+      },
+      "subsystem": ":TIMebase"
+    },
+    "triggerModeEdge": {
+      "template": ":TRIGger:MODE EDGE",
+      "query": false,
+      "subsystem": ":TRIGger"
+    },
+    "triggerSource": {
+      "template": ":TRIGger:EDGE:SOURce CHANnel%1",
+      "query": false,
+      "subsystem": ":TRIGger[:EDGE]"
+    },
+    "triggerSlope": {
+      "template": ":TRIGger:EDGE:SLOPe %1",
+      "query": false,
+      "params": {
+        "%1": "POSitive|NEGative|EITHer"
+      },
+      "subsystem": ":TRIGger[:EDGE]"
+    },
+    "triggerLevel": {
+      "template": ":TRIGger:EDGE:LEVel %1",
+      "query": false,
+      "params": {
+        "%1": "volts"
+      },
+      "subsystem": ":TRIGger[:EDGE]"
+    },
+    "triggerSweep": {
+      "template": ":TRIGger:SWEep %1",
+      "query": false,
+      "params": {
+        "%1": "AUTO|NORMal"
+      },
+      "subsystem": ":TRIGger"
+    },
+    "acquireType": {
+      "template": ":ACQuire:TYPE %1",
+      "query": false,
+      "params": {
+        "%1": "NORMal|AVERage|HRESolution|PEAK"
+      },
+      "subsystem": ":ACQuire"
+    },
+    "acquireCount": {
+      "template": ":ACQuire:COUNt %1",
+      "query": false,
+      "params": {
+        "%1": "count"
+      },
+      "subsystem": ":ACQuire"
+    },
+    "run": {
+      "template": ":RUN",
+      "query": false,
+      "subsystem": "Root"
+    },
+    "stop": {
+      "template": ":STOP",
+      "query": false,
+      "subsystem": "Root"
+    },
+    "single": {
+      "template": ":SINGle",
+      "query": false,
+      "subsystem": "Root"
+    },
+    "forceTrigger": {
+      "template": ":TRIGger:FORCe",
+      "query": false,
+      "subsystem": ":TRIGger"
+    },
+    "measure": {
+      "template": ":MEASure:%1? CHANnel%2",
+      "query": true,
+      "params": {
+        "%1": "VPP|VAMPlitude|VRMS|FREQuency|PERiod|RISetime|FALLtime|DUTYcycle"
+      },
+      "subsystem": ":MEASure"
+    },
+    "waveformSource": {
+      "template": ":WAVeform:SOURce CHANnel%1",
+      "query": false,
+      "subsystem": ":WAVeform"
+    },
+    "waveformFormat": {
+      "template": ":WAVeform:FORMat %1",
+      "query": false,
+      "params": {
+        "%1": "BYTE|WORD|ASCii"
+      },
+      "subsystem": ":WAVeform"
+    },
+    "waveformByteOrder": {
+      "template": ":WAVeform:BYTeorder %1",
+      "query": false,
+      "params": {
+        "%1": "LSBFirst|MSBFirst"
+      },
+      "subsystem": ":WAVeform"
+    },
+    "waveformUnsigned": {
+      "template": ":WAVeform:UNSigned %1",
+      "query": false,
+      "params": {
+        "%1": "ON|OFF"
+      },
+      "subsystem": ":WAVeform"
+    },
+    "waveformPreamble": {
+      "template": ":WAVeform:PREamble?",
+      "query": true,
+      "returns": "format,type,points,count,xincrement,xorigin,xreference,yincrement,yorigin,yreference",
+      "subsystem": ":WAVeform"
+    },
+    "waveformData": {
+      "template": ":WAVeform:DATA?",
+      "query": true,
+      "returns": "IEEE 488.2 definite-length binary block",
+      "subsystem": ":WAVeform"
+    },
+    "systemError": {
+      "template": ":SYSTem:ERRor?",
+      "query": true,
+      "returns": "<code>,\"<message>\"",
+      "subsystem": ":SYSTem"
+    },
+    "standardEventStatus": {
+      "template": "*ESR?",
+      "query": true,
+      "subsystem": "Common Commands"
+    },
+    "statusByte": {
+      "template": "*STB?",
+      "query": true,
+      "subsystem": "Common Commands"
+    },
+    "questionableEvent": {
+      "template": ":STATus:QUEStionable:EVENt?",
+      "query": true,
+      "subsystem": ":STATus"
+    },
+    "operationEvent": {
+      "template": ":STATus:OPERation:EVENt?",
+      "query": true,
+      "subsystem": ":STATus"
+    }
+  }
+}
