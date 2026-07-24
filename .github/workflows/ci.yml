@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt5 + build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            qtbase5-dev qtbase5-dev-tools g++ make
+
+      - name: Unit + simulator tests (tst_scope)
+        run: bash tests/run_tests.sh
+
+      - name: Dynamic-load test (QPluginLoader via CScopeManager)
+        run: bash tests/dl/run_dl.sh
+
+      - name: datasheet_fetch dry-run (offline)
+        run: python3 tools/datasheet_fetch/datasheet_fetch.py --dry-run resolve DSOX2012A
+
+      - name: Validate JSON catalogs and SCPI maps
+        run: |
+          python3 - <<'PY'
+          import json, glob
+          for p in ["models/scope_models.json", "datasheets/index.json"] + glob.glob("models/*/scpi_map.json"):
+              json.load(open(p))
+              print("OK", p)
+          PY
